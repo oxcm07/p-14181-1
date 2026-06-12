@@ -30,8 +30,9 @@ public class ApiV1PostControllerTest {
     @Autowired
     private PostService postService;
 
+
     @Test
-    @DisplayName("글 쓰기")
+    @DisplayName("글 작성")
     void t1() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
@@ -62,7 +63,7 @@ public class ApiV1PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 쓰기, without title")
+    @DisplayName("글 작성, without title")
     void t7() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
@@ -89,7 +90,7 @@ public class ApiV1PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 쓰기, without content")
+    @DisplayName("글 작성, without content")
     void t8() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
@@ -116,7 +117,7 @@ public class ApiV1PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 쓰기, with wrong json syntax")
+    @DisplayName("글 작성, with wrong json syntax")
     void t9() throws Exception {
 
         String wrongJsonBody = """

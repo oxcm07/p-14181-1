@@ -151,7 +151,6 @@ public class ApiV1PostCommentControllerTest {
                 .andDo(print());
 
         Post post = postService.findById(postId).get();
-
         PostComment postComment = post.getComments().getLast();
 
         resultActions

@@ -30,14 +30,16 @@ public class ApiV1PostController {
 
         return items
                 .stream()
-                .map(PostDto::new) // PostDto로 변환
+                .map(PostDto::new)
                 .toList();
     }
 
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     @Operation(summary = "단건 조회")
-    public PostDto getItem(@PathVariable int id) {
+    public PostDto getItem(
+            @PathVariable int id
+    ) {
         Post post = postService.findById(id).get();
 
         return new PostDto(post);
@@ -58,7 +60,7 @@ public class ApiV1PostController {
     }
 
 
-    record PostWriteReqBody(
+    public record PostWriteReqBody(
             @NotBlank
             @Size(min = 2, max = 100)
             String title,
@@ -71,7 +73,9 @@ public class ApiV1PostController {
     @PostMapping
     @Transactional
     @Operation(summary = "작성")
-    public RsData<PostDto> write(@Valid @RequestBody PostWriteReqBody reqBody) {
+    public RsData<PostDto> write(
+            @RequestBody @Valid PostWriteReqBody reqBody
+    ) {
         Post post = postService.write(reqBody.title, reqBody.content);
 
         return new RsData<>(
@@ -81,7 +85,8 @@ public class ApiV1PostController {
         );
     }
 
-    record PostModifyReqBody(
+
+    public record PostModifyReqBody(
             @NotBlank
             @Size(min = 2, max = 100)
             String title,
@@ -96,9 +101,10 @@ public class ApiV1PostController {
     @Operation(summary = "수정")
     public RsData<Void> modify(
             @PathVariable int id,
-            @Valid @RequestBody PostModifyReqBody reqBody
+            @RequestBody @Valid PostModifyReqBody reqBody
     ) {
         Post post = postService.findById(id).get();
+
         postService.modify(post, reqBody.title, reqBody.content);
 
         return new RsData<>(

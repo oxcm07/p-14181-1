@@ -31,8 +31,7 @@ public class ApiV1PostCommentController {
     ) {
         Post post = postService.findById(postId).get();
 
-        return post
-                .getComments()
+        return post.getComments()
                 .stream()
                 .map(PostCommentDto::new)
                 .toList();
@@ -46,7 +45,6 @@ public class ApiV1PostCommentController {
             @PathVariable int id
     ) {
         Post post = postService.findById(postId).get();
-
         PostComment postComment = post.findCommentById(id).get();
 
         return new PostCommentDto(postComment);
@@ -60,19 +58,18 @@ public class ApiV1PostCommentController {
             @PathVariable int id
     ) {
         Post post = postService.findById(postId).get();
-
         PostComment postComment = post.findCommentById(id).get();
 
         postService.deleteComment(post, postComment);
 
         return new RsData<>(
                 "200-1",
-                "%d번 댓글이 삭제되었습니다.".formatted(id)
+                "%d번 댓글이 삭제되었습니다.".formatted(postComment.getId())
         );
     }
 
 
-    record PostCommentModifyReqBody(
+    public record PostCommentModifyReqBody(
             @NotBlank
             @Size(min = 2, max = 100)
             String content
@@ -85,22 +82,21 @@ public class ApiV1PostCommentController {
     public RsData<Void> modify(
             @PathVariable int postId,
             @PathVariable int id,
-            @Valid @RequestBody PostCommentModifyReqBody reqBody
+            @RequestBody @Valid PostCommentModifyReqBody reqBody
     ) {
         Post post = postService.findById(postId).get();
-
         PostComment postComment = post.findCommentById(id).get();
 
         postService.modifyComment(postComment, reqBody.content);
 
         return new RsData<>(
                 "200-1",
-                "%d번 댓글이 수정되었습니다.".formatted(id)
+                "%d번 댓글이 수정되었습니다.".formatted(postComment.getId())
         );
     }
 
 
-    record PostCommentWriteReqBody(
+    public record PostCommentWriteReqBody(
             @NotBlank
             @Size(min = 2, max = 100)
             String content
@@ -118,7 +114,6 @@ public class ApiV1PostCommentController {
 
         PostComment postComment = postService.writeComment(post, reqBody.content);
 
-        // 트랜잭션 끝난 후 수행되어야 하는 더티체킹 및 여러가지 작업들을 지금 당장 수행해라.
         postService.flush();
 
         return new RsData<>(

@@ -31,7 +31,7 @@ public class HomeController {
     }
 
     @GetMapping(value = "/test/fetchPosts", produces = TEXT_HTML_VALUE)
-    @Operation(summary = "")
+    @Operation(summary = "fetchPosts 테스트")
     public String testFetchPosts() {
         return """
                 <script>
@@ -41,7 +41,7 @@ public class HomeController {
                   .then(response => response.json())
                   .then(data => {
                     console.log(data);
-                    console.log(data[1].title);
+                    console.log(data[0].title);
                   });
                 
                 fetch("/api/v1/posts/1")
@@ -51,6 +51,5 @@ public class HomeController {
                   });
                 </script>
                 """;
-
     }
 }

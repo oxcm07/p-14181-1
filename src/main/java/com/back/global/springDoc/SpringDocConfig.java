@@ -7,7 +7,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@OpenAPIDefinition(info = @Info(title = "API 서버", version = "beta", description = "API 서버 문서입니다."))
+@OpenAPIDefinition(
+        info = @Info(
+                title = "API 서버",
+                version = "beta",
+                description = "API 서버 문서입니다."
+        )
+)
 public class SpringDocConfig {
     @Bean
     public GroupedOpenApi groupApiV1() {
