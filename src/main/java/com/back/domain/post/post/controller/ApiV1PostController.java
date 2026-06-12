@@ -81,15 +81,10 @@ public class ApiV1PostController {
     @Operation(summary = "작성")
     public RsData<PostDto> write(
             @Valid @RequestBody PostWriteReqBody reqBody,
-            @NotBlank @Size(min = 2, max = 30) String username,
-            @NotBlank @Size(min = 2, max = 30) String password
+            @NotBlank @Size(min = 30, max = 50) String apiKey
     ) {
-        Member actor = memberService.findByUsername(username)
-                .orElseThrow(() -> new ServiceException("401-1", "회원 아님"));
-
-        if (!actor.getPassword().equals(password)) {
-            throw new ServiceException("401-2", "비밀번호 틀렸음");
-        }
+        Member actor = memberService.findByApiKey(apiKey)
+                .orElseThrow(() -> new ServiceException("401-1", "apiKey 불일치"));
 
         Post post = postService.write(actor, reqBody.title, reqBody.content);
 
