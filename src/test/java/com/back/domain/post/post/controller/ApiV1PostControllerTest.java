@@ -69,7 +69,7 @@ public class ApiV1PostControllerTest {
     void t7() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
-                        post("/api/v1/posts")
+                        post("/api/v1/posts?username=user1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                         {
@@ -96,7 +96,7 @@ public class ApiV1PostControllerTest {
     void t8() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
-                        post("/api/v1/posts")
+                        post("/api/v1/posts?username=user1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                         {
@@ -130,7 +130,7 @@ public class ApiV1PostControllerTest {
 
         ResultActions resultActions = mvc
                 .perform(
-                        post("/api/v1/posts")
+                        post("/api/v1/posts?username=user1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(wrongJsonBody)
                 )
