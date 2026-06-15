@@ -160,7 +160,7 @@ public class ApiV1PostCommentControllerTest {
     void t5() throws Exception {
         int postId = 1;
 
-        Member actor = memberService.findByUsername("user1").get();
+        Member actor = memberService.findByUsername("admin").get();
         String actorApiKey = actor.getApiKey();
 
         ResultActions resultActions = mvc
