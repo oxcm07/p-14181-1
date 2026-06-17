@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +31,11 @@ public class AuthTokenServiceTest {
     @Autowired
     private AuthTokenService authTokenService;
 
-    private int expireSeconds = 60 * 60 * 24 * 365;
-    private String secret = "abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890";
+    @Value("${custom.accessToken.expirationSeconds}")
+    private int expireSeconds;
+
+    @Value("${custom.jwt.secretKey}")
+    private String secret;
 
     @Test
     @DisplayName("authTokenService 서비스가 존재한다.")
@@ -66,8 +70,6 @@ public class AuthTokenServiceTest {
 
         assertThat(jwt).isNotBlank();
 
-        System.out.println("jwt = " + jwt);
-
         // 키가 유효한지 테스트
         Claims claims = Jwts.parser()
                 .verifyWith(secretKey)
@@ -82,7 +84,7 @@ public class AuthTokenServiceTest {
     }
 
     @Test
-    @DisplayName("Ut.jwt.toString 를 통해서 JWT 생성, {name=\"Paul\", age=23}")
+    @DisplayName("Ut.jwt.toString 를 통해서 JWT 생성, {name=\"Paul\", age=23}, 그리고 jwt 유효성 체크, 그리고 payload 추출")
     void t3() {
         Map<String, Object> payload = Map.of("name", "Paul", "age", 23);
 
@@ -105,7 +107,7 @@ public class AuthTokenServiceTest {
     }
 
     @Test
-    @DisplayName("authTokenService.genAccessToken(member);")
+    @DisplayName("authTokenService.genAccessToken(member); authTokenService.payload(accessToken);")
     void t4() {
         Member memberUser1 = memberService.findByUsername("user1").get();
 
