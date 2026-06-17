@@ -66,19 +66,23 @@ public class Rq {
     }
 
     public void setCookie(String name, String value) {
+        if(value == null) {
+            value = "";
+        }
+
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
+
+        //값이 없으면 해당 쿠키변수 삭제
+        if(value.isBlank()) {
+            cookie.setMaxAge(0);
+        }
 
         resp.addCookie(cookie);
     }
 
     public void deleteCookie(String name) {
-        Cookie cookie = new Cookie(name, "");
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(0);
-
-        resp.addCookie(cookie);
+        setCookie(name, null);
     }
 }
