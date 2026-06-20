@@ -10,6 +10,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -114,6 +119,25 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             rq.setCookie("accessToken", actorAccessToken);
             rq.setHeader("Authorization", actorAccessToken);
         }
+
+        //Spring Security용 사용자 객체
+        UserDetails user = new User(
+                member.getUsername(),
+                "",
+                List.of()
+        );
+
+        //인증 토큰 생성
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user,
+                user.getPassword(),
+                user.getAuthorities()
+        );
+
+        // 시큐리티 저장소에 인증 정보 등록 - 로그인 처리 완료
+        SecurityContextHolder
+                .getContext()
+                .setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }
