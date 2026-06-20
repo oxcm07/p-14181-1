@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -121,9 +120,11 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         }
 
         //Spring Security용 사용자 객체
-        UserDetails user = new User(
+        UserDetails user = new SecurityUser(
+                member.getId(),
                 member.getUsername(),
                 "",
+                member.getName(),
                 List.of()
         );
 
