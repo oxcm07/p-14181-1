@@ -122,6 +122,8 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             rq.setHeader("Authorization", actorAccessToken);
         }
 
+        rq.setActor(member);
+
         //보유 권한 확인 후 실제 권한을 부여
         Collection<? extends GrantedAuthority> authorities = member.isAdmin() ?
                 List.of(new SimpleGrantedAuthority("ROLE_ADMIN")) : List.of();
