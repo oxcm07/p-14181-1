@@ -49,6 +49,7 @@ public class AppConfig {
         AppConfig.objectMapper = objectMapper;
     }
 
+    //AppConfig의 생성과 의존성 주입이 모두 완료된 후, 딱 한 번 자동으로 실행되는 초기화 메서드
     @PostConstruct
     public void postConstruct() {
         Ut.json.objectMapper = objectMapper;

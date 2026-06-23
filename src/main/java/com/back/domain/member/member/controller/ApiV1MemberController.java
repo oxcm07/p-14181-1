@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,7 +27,8 @@ public class ApiV1MemberController {
     private final MemberService memberService;
     private final Rq rq;
 
-    record MemberJoinRq(
+
+    public record MemberJoinReqBody(
             @NotBlank
             @Size(min = 2, max = 30)
             String username,
@@ -39,33 +41,16 @@ public class ApiV1MemberController {
     ) {
     }
 
-    record MemberLoginRq(
-            @NotBlank
-            @Size(min = 2, max = 30)
-            String username,
-            @NotBlank
-            @Size(min = 2, max = 30)
-            String password
-    ) {
-    }
-
-    record MemberLoginResBody(
-            MemberDto item,
-            String apiKey,
-            String accessToken
-    ) {
-    }
-
     @PostMapping
-    @Operation(summary = "회원가입")
+    @Transactional
+    @Operation(summary = "가입")
     public RsData<MemberDto> join(
-            @Valid @RequestBody MemberJoinRq reqBody
+            @RequestBody @Valid MemberJoinReqBody reqBody
     ) {
-
         Member member = memberService.join(
-                reqBody.username,
-                reqBody.password,
-                reqBody.nickname
+                reqBody.username(),
+                reqBody.password(),
+                reqBody.nickname()
         );
 
         return new RsData<>(
@@ -75,15 +60,37 @@ public class ApiV1MemberController {
         );
     }
 
+
+    public record MemberLoginReqBody(
+            @NotBlank
+            @Size(min = 2, max = 30)
+            String username,
+            @NotBlank
+            @Size(min = 2, max = 30)
+            String password
+    ) {
+    }
+
+    public record MemberLoginResBody(
+            MemberDto item,
+            String apiKey,
+            String accessToken
+    ) {
+    }
+
     @PostMapping("/login")
+    @Transactional(readOnly = true)
     @Operation(summary = "로그인")
     public RsData<MemberLoginResBody> login(
-            @Valid @RequestBody MemberLoginRq reqBody
+            @RequestBody @Valid MemberLoginReqBody reqBody
     ) {
-        Member member = memberService.findByUsername(reqBody.username)
+        Member member = memberService.findByUsername(reqBody.username())
                 .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 아이디입니다."));
 
-        memberService.checkPassword(member, reqBody.password);
+        memberService.checkPassword(
+                member,
+                reqBody.password()
+        );
 
         String accessToken = memberService.genAccessToken(member);
 
@@ -101,17 +108,10 @@ public class ApiV1MemberController {
         );
     }
 
-    @GetMapping("/me")
-    @Operation(summary = "내 정보")
-    public MemberWithUsernameDto me(){
-        Member actor = memberService.findById(rq.getActor().getId()).get();
 
-        return new MemberWithUsernameDto(actor);
-    }
-
-    @DeleteMapping("logout")
+    @DeleteMapping("/logout")
     @Operation(summary = "로그아웃")
-    public RsData<Void> logout(){
+    public RsData<Void> logout() {
         rq.deleteCookie("apiKey");
         rq.deleteCookie("accessToken");
 
@@ -119,5 +119,15 @@ public class ApiV1MemberController {
                 "200-1",
                 "로그아웃 되었습니다."
         );
+    }
+
+
+    @GetMapping("/me")
+    @Transactional(readOnly = true)
+    @Operation(summary = "내 정보")
+    public MemberWithUsernameDto me() {
+        Member actor = memberService.findById(rq.getActor().getId()).get();
+
+        return new MemberWithUsernameDto(actor);
     }
 }
